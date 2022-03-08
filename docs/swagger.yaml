@@ -1,0 +1,84 @@
+basePath: /v1
+definitions:
+  models.BaseResp:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        type: object
+      msg:
+        example: 请求成功/失败
+        type: string
+    type: object
+info:
+  contact: {}
+  description: plugin maintenance server api doc
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Swagger sync-agent API
+  version: 0.0.1
+paths:
+  /synchronization/{platform}/comment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 平台：gitee 或 github
+        in: path
+        name: platform
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步成功
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "404":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 同步 gitee 或 github 平台的 comment
+      tags:
+      - Synchronization
+  /synchronization/{platform}/issue:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 平台：gitee 或 github
+        in: path
+        name: platform
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步成功
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "404":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 同步 gitee 或 github 平台的 issue
+      tags:
+      - Synchronization
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: access-token
+    type: apiKey
+swagger: "2.0"
