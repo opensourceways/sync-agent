@@ -11,6 +11,53 @@ definitions:
         example: 请求成功/失败
         type: string
     type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+    required:
+    - org
+    - repo
+    type: object
+  models.Issue:
+    properties:
+      content:
+        type: string
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+      title:
+        type: string
+    required:
+    - content
+    - number
+    - org
+    - repo
+    - title
+    type: object
+  models.SyncIssueResult:
+    properties:
+      link:
+        type: string
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+    required:
+    - org
+    - repo
+    type: object
 info:
   contact: {}
   description: plugin maintenance server api doc
@@ -30,6 +77,12 @@ paths:
         name: platform
         required: true
         type: string
+      - description: 需要同步的comment
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
       produces:
       - application/json
       responses:
@@ -58,13 +111,24 @@ paths:
         name: platform
         required: true
         type: string
+      - description: 需要同步的issue
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Issue'
       produces:
       - application/json
       responses:
         "200":
           description: 同步成功
           schema:
-            $ref: '#/definitions/models.BaseResp'
+            allOf:
+            - $ref: '#/definitions/models.BaseResp'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.SyncIssueResult'
+              type: object
         "404":
           description: 错误返回
           schema:

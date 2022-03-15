@@ -46,6 +46,15 @@ var doc = `{
                         "name": "platform",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "需要同步的comment",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     }
                 ],
                 "responses": {
@@ -89,13 +98,34 @@ var doc = `{
                         "name": "platform",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "需要同步的issue",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Issue"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "同步成功",
                         "schema": {
-                            "$ref": "#/definitions/models.BaseResp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.BaseResp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.SyncIssueResult"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -128,6 +158,75 @@ var doc = `{
                 "msg": {
                     "type": "string",
                     "example": "请求成功/失败"
+                }
+            }
+        },
+        "models.Comment": {
+            "type": "object",
+            "required": [
+                "org",
+                "repo"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "repo": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Issue": {
+            "type": "object",
+            "required": [
+                "content",
+                "number",
+                "org",
+                "repo",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "repo": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SyncIssueResult": {
+            "type": "object",
+            "required": [
+                "org",
+                "repo"
+            ],
+            "properties": {
+                "link": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "repo": {
+                    "type": "string"
                 }
             }
         }

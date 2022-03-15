@@ -10,6 +10,7 @@ import (
 	"github.com/opensourceways/community-robot-lib/options"
 	"github.com/sirupsen/logrus"
 
+	"github.com/opensourceways/sync-agent/client"
 	"github.com/opensourceways/sync-agent/config"
 )
 
@@ -35,6 +36,11 @@ func Run(opt options.ServiceOptions) {
 
 	} else {
 		logrus.SetLevel(logrus.DebugLevel)
+	}
+
+	if err := client.Init(); err != nil {
+		logrus.WithError(err).Fatal("init client")
+		return
 	}
 
 	defer interrupts.WaitForGracefulShutdown()
