@@ -186,16 +186,12 @@ var doc = `{
             "type": "object",
             "required": [
                 "content",
-                "number",
                 "org",
                 "repo",
                 "title"
             ],
             "properties": {
                 "content": {
-                    "type": "string"
-                },
-                "number": {
                     "type": "string"
                 },
                 "org": {

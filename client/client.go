@@ -69,11 +69,23 @@ type giteeSyncClient struct {
 }
 
 func (sc *giteeSyncClient) SyncIssue(issue models.Issue) (*models.SyncIssueResult, error) {
-	return nil, nil
+	iss, err := sc.giteeCli.CreateIssue(issue.Org, issue.Repo, issue.Title, issue.Content)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.SyncIssueResult{
+		OrgRepo: models.OrgRepo{
+			Org:  issue.Org,
+			Repo: issue.Repo,
+		},
+		Number: iss.Number,
+		Link:   iss.HtmlUrl,
+	}, nil
 }
 
 func (sc *giteeSyncClient) SyncComment(comment models.Comment) error {
-	return nil
+	return sc.giteeCli.CreateIssueComment(comment.Org, comment.Repo, comment.Number, comment.Content)
 }
 
 func Init() error {

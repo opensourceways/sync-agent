@@ -29,8 +29,6 @@ definitions:
     properties:
       content:
         type: string
-      number:
-        type: string
       org:
         type: string
       repo:
@@ -39,7 +37,6 @@ definitions:
         type: string
     required:
     - content
-    - number
     - org
     - repo
     - title
