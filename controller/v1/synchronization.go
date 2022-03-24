@@ -2,10 +2,13 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 
 	"github.com/opensourceways/sync-agent/models"
+	"github.com/opensourceways/sync-agent/utils"
 )
+
+var paramError = utils.NewCodeError(utils.CodeBadeRequest)
 
 type SyncController struct {
 	baseController
@@ -30,30 +33,25 @@ func (sc *SyncController) Register(root *gin.RouterGroup) {
 // @Failure	500	{object}	models.BaseResp	"错误返回"
 // @Router /synchronization/{platform}/comment [post]
 func (sc *SyncController) Comment(c *gin.Context) {
-	b := models.Comment{}
-	if err := c.ShouldBind(&b); err != nil {
-		logrus.Error(err)
-		sc.responseBadRequest(c)
+	err := func() error {
+		b := models.Comment{}
+		if err := c.ShouldBind(&b); err != nil {
+			return errors.Wrap(paramError, err.Error())
+		}
 
-		return
-	}
+		client, err := platformClient(c.Param("platform"))
+		if err != nil {
+			return errors.Wrap(paramError, err.Error())
+		}
 
-	client, err := platformClient(c.Param("platform"))
-	if err != nil {
-		logrus.Error(err)
-		sc.responseBadRequest(c)
+		if err := client.SyncComment(b); err != nil {
+			return errors.Wrapf(utils.NewCodeError(utils.CodeSyncIssueCommentFail), "sync comment error: %v", err)
+		}
 
-		return
-	}
+		return nil
+	}()
 
-	if err := client.SyncComment(b); err != nil {
-		logrus.Error(err)
-		sc.responseFailed(c, codeSyncFailed, msgSyncFailed)
-
-		return
-	}
-
-	sc.responseSuccess(c)
+	sc.doResponse(c, nil, err)
 }
 
 // @Tags Synchronization
@@ -67,29 +65,24 @@ func (sc *SyncController) Comment(c *gin.Context) {
 // @Failure	500	{object}	models.BaseResp	"错误返回"
 // @Router /synchronization/{platform}/issue [post]
 func (sc *SyncController) Issue(c *gin.Context) {
-	b := models.Issue{}
-	if err := c.ShouldBind(&b); err != nil {
-		logrus.Error(err)
-		sc.responseBadRequest(c)
+	r, err := func() (*models.SyncIssueResult, error) {
+		b := models.Issue{}
+		if err := c.ShouldBind(&b); err != nil {
+			return nil, errors.Wrap(paramError, err.Error())
+		}
 
-		return
-	}
+		client, err := platformClient(c.Param("platform"))
+		if err != nil {
+			return nil, errors.Wrap(paramError, err.Error())
+		}
 
-	client, err := platformClient(c.Param("platform"))
-	if err != nil {
-		logrus.Error(err)
-		sc.responseBadRequest(c)
+		result, err := client.SyncIssue(b)
+		if err != nil {
+			err = errors.Wrapf(utils.NewCodeError(utils.CodeSyncIssueFail), "sync issue fail: %v", err)
+		}
 
-		return
-	}
+		return result, err
+	}()
 
-	result, err := client.SyncIssue(b)
-	if err != nil {
-		logrus.Error(err)
-		sc.responseFailed(c, codeSyncFailed, msgSyncFailed)
-
-		return
-	}
-
-	sc.responseSuccessWithData(c, result)
+	sc.doResponse(c, r, err)
 }
