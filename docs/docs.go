@@ -53,7 +53,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Comment"
+                            "$ref": "#/definitions/models.SyncComment"
                         }
                     }
                 ],
@@ -64,13 +64,13 @@ var doc = `{
                             "$ref": "#/definitions/models.BaseResp"
                         }
                     },
-                    "404": {
+                    "400": {
                         "description": "错误返回",
                         "schema": {
                             "$ref": "#/definitions/models.BaseResp"
                         }
                     },
-                    "500": {
+                    "404": {
                         "description": "错误返回",
                         "schema": {
                             "$ref": "#/definitions/models.BaseResp"
@@ -80,6 +80,56 @@ var doc = `{
             }
         },
         "/synchronization/{platform}/issue": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Synchronization"
+                ],
+                "summary": "同步更新 gitee 或 github 平台的 issue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "平台：gitee 或 github",
+                        "name": "platform",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "需要跟新的issue信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.IssueUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "同步成功",
+                        "schema": {
+                            "$ref": "#/definitions/models.BaseResp"
+                        }
+                    },
+                    "400": {
+                        "description": "错误返回",
+                        "schema": {
+                            "$ref": "#/definitions/models.BaseResp"
+                        }
+                    },
+                    "404": {
+                        "description": "错误返回",
+                        "schema": {
+                            "$ref": "#/definitions/models.BaseResp"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -128,13 +178,13 @@ var doc = `{
                             ]
                         }
                     },
-                    "404": {
+                    "400": {
                         "description": "错误返回",
                         "schema": {
                             "$ref": "#/definitions/models.BaseResp"
                         }
                     },
-                    "500": {
+                    "404": {
                         "description": "错误返回",
                         "schema": {
                             "$ref": "#/definitions/models.BaseResp"
@@ -161,7 +211,7 @@ var doc = `{
                 }
             }
         },
-        "models.Comment": {
+        "models.SyncComment": {
             "type": "object",
             "required": [
                 "org",
@@ -201,6 +251,29 @@ var doc = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.IssueUpdate": {
+            "type": "object",
+            "required": [
+                "number",
+                "org",
+                "repo",
+                "state"
+            ],
+            "properties": {
+                "number": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "repo": {
+                    "type": "string"
+                },
+                "state": {
                     "type": "string"
                 }
             }

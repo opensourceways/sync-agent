@@ -41,6 +41,22 @@ definitions:
     - repo
     - title
     type: object
+  models.IssueUpdate:
+    properties:
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+      state:
+        type: string
+    required:
+    - number
+    - org
+    - repo
+    - state
+    type: object
   models.SyncIssueResult:
     properties:
       link:
@@ -87,11 +103,11 @@ paths:
           description: 同步成功
           schema:
             $ref: '#/definitions/models.BaseResp'
-        "404":
+        "400":
           description: 错误返回
           schema:
             $ref: '#/definitions/models.BaseResp'
-        "500":
+        "404":
           description: 错误返回
           schema:
             $ref: '#/definitions/models.BaseResp'
@@ -126,15 +142,48 @@ paths:
                 data:
                   $ref: '#/definitions/models.SyncIssueResult'
               type: object
+        "400":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
         "404":
           description: 错误返回
           schema:
             $ref: '#/definitions/models.BaseResp'
-        "500":
+      summary: 同步 gitee 或 github 平台的 issue
+      tags:
+      - Synchronization
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 平台：gitee 或 github
+        in: path
+        name: platform
+        required: true
+        type: string
+      - description: 需要跟新的issue信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.IssueUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步成功
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "400":
           description: 错误返回
           schema:
             $ref: '#/definitions/models.BaseResp'
-      summary: 同步 gitee 或 github 平台的 issue
+        "404":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 同步更新 gitee 或 github 平台的 issue
       tags:
       - Synchronization
 securityDefinitions:

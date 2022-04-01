@@ -11,6 +11,12 @@ type Issue struct {
 	Title   string `json:"title" binding:"required"`
 }
 
+type IssueUpdate struct {
+	OrgRepo
+	Number string `json:"number" binding:"required"`
+	State  string `json:"state" binding:"required,oneof=open closed"`
+}
+
 type Comment struct {
 	OrgRepo
 	Number  string
