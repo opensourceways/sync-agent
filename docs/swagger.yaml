@@ -1,0 +1,194 @@
+basePath: /v1
+definitions:
+  models.BaseResp:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        type: object
+      msg:
+        example: 请求成功/失败
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+    required:
+    - org
+    - repo
+    type: object
+  models.Issue:
+    properties:
+      content:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+      title:
+        type: string
+    required:
+    - content
+    - org
+    - repo
+    - title
+    type: object
+  models.IssueUpdate:
+    properties:
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+      state:
+        type: string
+    required:
+    - number
+    - org
+    - repo
+    - state
+    type: object
+  models.SyncIssueResult:
+    properties:
+      link:
+        type: string
+      number:
+        type: string
+      org:
+        type: string
+      repo:
+        type: string
+    required:
+    - org
+    - repo
+    type: object
+info:
+  contact: {}
+  description: plugin maintenance server api doc
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Swagger sync-agent API
+  version: 0.0.1
+paths:
+  /synchronization/{platform}/comment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 平台：gitee 或 github
+        in: path
+        name: platform
+        required: true
+        type: string
+      - description: 需要同步的comment
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步成功
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "400":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "404":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 同步 gitee 或 github 平台的 comment
+      tags:
+      - Synchronization
+  /synchronization/{platform}/issue:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 平台：gitee 或 github
+        in: path
+        name: platform
+        required: true
+        type: string
+      - description: 需要同步的issue
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Issue'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.BaseResp'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.SyncIssueResult'
+              type: object
+        "400":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "404":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 同步 gitee 或 github 平台的 issue
+      tags:
+      - Synchronization
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 平台：gitee 或 github
+        in: path
+        name: platform
+        required: true
+        type: string
+      - description: 需要跟新的issue信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.IssueUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步成功
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "400":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "404":
+          description: 错误返回
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 同步更新 gitee 或 github 平台的 issue
+      tags:
+      - Synchronization
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: access-token
+    type: apiKey
+swagger: "2.0"
